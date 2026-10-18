@@ -23,7 +23,7 @@ Os pares de chave são o principal atributo para realizar a integração Memed, 
 #### Consultar se o par de chaves está ativo e funcional:
 
 ```
-PATCH: MEMED_API_URL/v1/sinapse-prescricao/check-key
+PATCH: MEMED_API_URL/sinapse-prescricao/check-key  (doc oficial repete /v1; MEMED_API_URL já termina em /v1)
 ```
 
 - cURL

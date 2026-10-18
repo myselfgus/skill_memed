@@ -96,7 +96,7 @@ function carregarScriptMemed(token) {
 
 O `id` fixo + guarda `getElementById` é critério de homologação: a segunda prescrição da mesma sessão deve abrir **sem reinjetar** o script. Não detecte duplicidade pela URL (ela muda entre ambientes). Carregue cedo, no início do atendimento, não no clique.
 
-Também é possível usar `<script src=... data-token=...>` estático. Para exibir embutido num `div` em vez de tela inteira (padrão recomendado), adicione `data-container="<id-do-div>"`; o elemento precisa de no mínimo 820×700px.
+Também é possível usar `<script src=... data-token=...>` estático. Para exibir embutido num `div` em vez de tela inteira (padrão recomendado), adicione `data-container="<id-do-div>"` (no carregamento dinâmico, `script.dataset.container = '<id-do-div>'`); o elemento precisa de no mínimo 820×700px.
 
 ### 3. Esperar o módulo, registrar eventos, abrir no clique
 
@@ -115,8 +115,10 @@ function iniciarAtendimento(token) {
       MdHub.event.add('prescricaoImpressa', async (prescricao) => {
         await salvarPrescricaoNoBackend(prescricao);   // persistir no servidor
       });
-      MdHub.event.add('prescricaoExcluida', async (data) => {
-        await excluirPrescricaoNoBackend(data.id);     // sincronizar exclusão
+      MdHub.event.add('prescricaoExcluida', async (payload) => {
+        // a doc diverge: o evento entrega o id direto (número); Boas Práticas usa payload.id
+        const id = typeof payload === 'object' && payload !== null ? payload.id : payload;
+        await excluirPrescricaoNoBackend(id);          // sincronizar exclusão
       });
     }
 
@@ -162,7 +164,7 @@ Por que cada detalhe importa:
 - **Listeners uma vez só** — registrar em cada clique duplica gravações.
 - **`idExterno` do paciente** — sem ele a Memed cria um paciente novo a cada atendimento e o histórico se perde. Em homologação use prefixo do parceiro (`parceiro-demo-123`), nunca `"123"`, para não colidir com outros parceiros.
 - **Dados enviados por `setPaciente` não podem ser editados pelo prescritor** dentro da Memed — mande dados corretos.
-- **`setWorkplace`** — define o local que sai no receituário. A página do comando usa `local_name`, `cnes`, `address`, `city`, `state`, `phone`, e torna `cnes` + `local_name` obrigatórios para parceiros novos. O exemplo da página de boas práticas usa outros nomes (`nome`, `endereco`, `uf`…); siga a página do comando.
+- **`setWorkplace`** — define o local que sai no receituário. `cnes` + `local_name` são obrigatórios para parceiros novos (nomes de campo: ver "Inconsistências" abaixo).
 - **Trocar de paciente** = só chamar `setPaciente` de novo; não recarregue o script.
 - **SPA (React/Vue/Angular)**: centralize o carregamento num singleton; em React, `useEffect(() => { if (token) iniciarAtendimento(token); }, [token])` — nunca `useEffect` sem array de dependências.
 - **Máquina compartilhada entre prescritores**: ao sair, chame `await MdHub.command.send('plataforma.sdk', 'logout')` para limpar o localStorage (obrigatório pela doc, evita vazamento entre cadastros).
@@ -216,6 +218,21 @@ O console também mostra o ambiente: `ENVIRONMENT integrations` = homologação.
 | `Blocked a frame with origin` | `Referrer-Policy: same-origin` na sua página; use `strict-origin-when-cross-origin` |
 | Erro 400 ao cadastrar | leia `errors[].detail`: CPF/data inválidos, registro não encontrado no conselho, `external_id` já usado, campo obrigatório faltando |
 | `core:moduleHide` nunca casa | usar `module.moduleName` (não `module.name`) |
+
+## Inconsistências da documentação oficial
+
+A doc da Memed se contradiz em alguns pontos. Ao escrever código, siga a coluna "use" e, quando o comportamento importar, peça ao usuário para confirmar em homologação (logar o valor recebido).
+
+| Ponto | O que a doc diz | Use |
+|---|---|---|
+| Argumento de `prescricaoExcluida` | página do evento: o id (número); Boas Práticas: objeto com `.id` | aceitar os dois (código acima) |
+| Campos de `setWorkplace` | página do comando: `local_name`, `cnes`, `address`, `city`, `state`, `phone`; Boas Práticas: `nome`, `endereco`, `uf`… | os da página do comando |
+| Modo incorporado dinâmico | `script.data.container = ...` | `script.dataset.container = ...` (`script.data` não existe) |
+| Autenticação no front | uma página usa o atributo `token=` | `data-token=` |
+| Rota `check-key` | `MEMED_API_URL/v1/sinapse-prescricao/check-key` | `MEMED_API_URL/sinapse-prescricao/check-key` (a base já termina em `/v1`) |
+| Resposta das rotas de PDF e link da receita | formato do JSON não documentado | guardar a resposta inteira e ler os campos depois de inspecionar em homologação |
+
+As referências já trazem essas correções anotadas como "doc oficial: …".
 
 ## Onde está cada detalhe
 

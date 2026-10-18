@@ -330,7 +330,8 @@ Segue um exemplo completo do modo incorporado no carregamento estático do scrip
 Agora para utilizar o modo incorporado, no caso de [carregamento dinâmico do script](https://doc.memed.com.br/docs/modos-de-carregamento#carregamento-din%C3%A2mico) de prescrição Memed, você deve também enviar o atributo adicional na criação do elemento
 
 ```
-script.data.container = "{ID_ELEMENTO_HTML}";
+// doc oficial: script.data.container (não existe no DOM); correto:
+script.dataset.container = "{ID_ELEMENTO_HTML}";
 ```
 
 Veja um exemplo abaixo de como ficaria código javascript do modo carregamento estático com a tela incorporada:
@@ -341,7 +342,8 @@ script.src = "{MEMED_SCRIPT_URL}";
 script.dataset.token = "{TOKEN_ACESSO_USUARIO_PRESCRITOR}";
 
 //Adiciona o atributo data-container ao script que será carregado dinamicamente.
-script.data.container = "{ID_ELEMENTO_HTML}";
+// doc oficial: script.data.container (não existe no DOM); correto:
+script.dataset.container = "{ID_ELEMENTO_HTML}";
 
 document.body.appendChild(script);
 ```
@@ -665,4 +667,4 @@ Com a experiencia completa, você pode ainda explorar nossas documentações par
 - Se aprofunde nas [funcionalidades da API Memed](https://doc.memed.com.br/docs/backend-api)
 - Entenda as diferentes formas de [renderizar a prescrição Memed](https://doc.memed.com.br/docs/modos-de-carregamento)
 - Saiba como funciona para [habilitar e desabilitar funcionalidades da prescrição](https://doc.memed.com.br/docs/frontend/comandos-mdhub)
-- Garanta agilidade ao prescritor e segurança de prescrição com [alertas de alergias](https://doc.memed.com.br/docs/frontend/comandos-mdhub/set-allergy) e [condições](https://doc.memed.com.br/docs/docs/frontend/comandos-mdhub/categories-condition)
+- Garanta agilidade ao prescritor e segurança de prescrição com [alertas de alergias](https://doc.memed.com.br/docs/frontend/comandos-mdhub/set-allergy) e [condições](https://doc.memed.com.br/docs/frontend/comandos-mdhub/categories-condition)

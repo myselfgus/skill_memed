@@ -49,6 +49,21 @@ SECTIONS = [
 ]
 
 
+# Erros conhecidos na documentação oficial, corrigidos na geração com uma nota
+# para o leitor saber que o texto difere do original.
+FIXES = [
+    ("script.data.container = ",
+     "// doc oficial: script.data.container (não existe no DOM); correto:\n"
+     "script.dataset.container = "),
+    ('  token="{TOKEN_DE_ACESSO_DO_USUARIO_PRESCRITOR}"',
+     '  data-token="{TOKEN_DE_ACESSO_DO_USUARIO_PRESCRITOR}"'
+     "  <!-- doc oficial: token=; o atributo correto é data-token -->"),
+    ("MEMED_API_URL/v1/sinapse-prescricao/check-key",
+     "MEMED_API_URL/sinapse-prescricao/check-key  (doc oficial repete /v1; MEMED_API_URL já termina em /v1)"),
+    ("/docs/docs/", "/docs/"),
+]
+
+
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "memed-skill-updater"})
     with urllib.request.urlopen(req, timeout=60) as r:
@@ -97,6 +112,8 @@ def html_to_md(html, base):
     md = re.sub(r"!\[\]\(data:image[^)]*\)", "", md)
     # cartões de índice do Docusaurus ("📄️ Título" + resumo) não trazem conteúdo
     md = re.sub(r"\[\]\([^)]*\)\n+## 📄️ [^\n]*\n+[^\n]*\n?", "", md)
+    for old, new in FIXES:
+        md = md.replace(old, new)
     md = re.sub(r"\]\(/docs/", f"]({base}/docs/", md)
     return re.sub(r"\n{3,}", "\n\n", md).strip()
 

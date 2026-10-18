@@ -39,7 +39,7 @@ Como mostra o exemplo abaixo:
 ```
 <script
   src="{MEMED_SCRIPT_URL}"
-  token="{TOKEN_DE_ACESSO_DO_USUARIO_PRESCRITOR}"
+  data-token="{TOKEN_DE_ACESSO_DO_USUARIO_PRESCRITOR}"  <!-- doc oficial: token=; o atributo correto é data-token -->
 ></script>
 ```
 
