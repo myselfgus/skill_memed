@@ -1,0 +1,54 @@
+{
+  "skill_name": "memed-prescricao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Tenho um prontuário em Node/Express + React. Preciso integrar a receita digital da Memed: o médico clica em 'Prescrever' na tela do atendimento e abre a prescrição com os dados do paciente já preenchidos, e quando ele emitir a receita eu quero salvar no meu banco. Me dá o código do backend (rota que devolve o token do médico, cadastrando se não existir) e do componente React. Estamos começando em homologação.",
+      "expected_output": "Backend Express com chaves em env, GET/POST sinapse-prescricao/usuarios, devolve só o token; React com singleton de script id fixo, core:moduleInit, listeners prescricaoImpressa/prescricaoExcluida uma vez, setWorkplace, setPaciente com idExterno + await show no clique.",
+      "files": [],
+      "assertions": [
+        "Chaves API/secret ficam só no backend (env vars), nunca no código React",
+        "Backend consulta GET sinapse-prescricao/usuarios/{id} e cadastra via POST quando não existe",
+        "Payload de cadastro inclui external_id, nome, sobrenome, cpf, data_nascimento e board (code/number/state)",
+        "Usa as URLs de homologação corretas (integrations.api.memed.com.br/v1 e script integrations.memed.com.br)",
+        "Script carregado uma vez com id fixo e guarda getElementById (sem reinjetar no clique)",
+        "Comandos e listeners só após core:moduleInit com checagem module.name === 'plataforma.prescricao'",
+        "Registra prescricaoImpressa E prescricaoExcluida uma única vez e persiste/sincroniza no backend",
+        "setPaciente com idExterno e await antes de await MdHub.module.show no clique",
+        "Chama setWorkplace (com local_name/cnes)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "revisa essa integração com a memed pra mim, queremos pedir as chaves de produção semana que vem:\n\n```html\n<button id=\"btn\">Receita</button>\n<script>\nconst API_KEY='<API_KEY_DE_HOMOLOGACAO>';\nconst SECRET='<SECRET_KEY_DE_HOMOLOGACAO>';\ndocument.getElementById('btn').onclick = async () => {\n  const r = await fetch(`https://integrations.api.memed.com.br/v1/sinapse-prescricao/usuarios/${crm}SP?api-key=${API_KEY}&secret-key=${SECRET}`);\n  const token = (await r.json()).data.attributes.token;\n  const s = document.createElement('script');\n  s.src = 'https://integrations.memed.com.br/modulos/plataforma.sinapse-prescricao/build/sinapse-prescricao.min.js';\n  s.dataset.token = token;\n  s.onload = () => {\n    MdSinapsePrescricao.event.add('core:moduleInit', (m) => {\n      if (m.name === 'plataforma.prescricao') {\n        MdHub.event.add('prescricaoImpressa', (p) => console.log(p));\n        MdHub.command.send('plataforma.prescricao', 'setPaciente', { nome: paciente.nome, cpf: paciente.cpf });\n        MdHub.module.show('plataforma.prescricao');\n      }\n    });\n  };\n  document.body.appendChild(s);\n};\n</script>\n```",
+      "expected_output": "Lista de problemas versus critérios de homologação: chaves no frontend, chamada API no front, script reinjetado a cada clique sem id fixo, listener registrado a cada clique, prescricaoImpressa só loga, falta prescricaoExcluida, setPaciente sem idExterno/sexo/await, falta setWorkplace, show sem await; código corrigido.",
+      "files": [],
+      "assertions": [
+        "Aponta chaves expostas no frontend como bloqueante (revogação/reprovação)",
+        "Aponta que a chamada à API Memed deve sair do backend",
+        "Aponta reinjeção do script a cada clique e recomenda id fixo + guarda getElementById",
+        "Aponta listeners registrados repetidamente / duplicados",
+        "Aponta que prescricaoImpressa só faz console.log e precisa persistir no backend",
+        "Aponta ausência de prescricaoExcluida",
+        "Aponta setPaciente sem idExterno (e sem sexo)",
+        "Aponta falta de await nos comandos assíncronos",
+        "Aponta ausência de setWorkplace",
+        "Entrega versão corrigida do código"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Nossa integração Memed em homologação começou a dar um monte de 401 no console quando abre a prescrição, ontem funcionava. O médico de teste foi cadastrado mês passado e a gente guarda o token dele no banco desde então. O que pode ser e como corrijo?",
+      "expected_output": "Explica que o token não é estático (muda com alteração de dados), que homologação é limpa periodicamente (usuário pode ter sido apagado), status Inativo, horário de indisponibilidade; recomenda buscar token via GET antes de cada atendimento e recadastrar se 404.",
+      "files": [],
+      "assertions": [
+        "Explica que o token do prescritor não é estático e guardar token antigo é a causa provável",
+        "Menciona limpeza periódica do banco de homologação (usuário pode ter sido apagado)",
+        "Menciona status Inativo do prescritor como causa possível",
+        "Recomenda buscar o token via GET sinapse-prescricao/usuarios/{id} antes de cada atendimento",
+        "Sugere recadastrar (POST) se o usuário não existir mais",
+        "Não sugere expor chaves no frontend"
+      ]
+    }
+  ]
+}
