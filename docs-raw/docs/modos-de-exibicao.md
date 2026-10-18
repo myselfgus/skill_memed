@@ -1,0 +1,105 @@
+https://doc.memed.com.br/docs/modos-de-exibicao/
+
+# Modos de exibição da prescrição
+
+Existem dois modos de exibir a prescrição Memed dentro da sua aplicação.
+
+* [**Tela inteira**](/docs/modos-de-exibicao#tela-inteira): a tela da Memed sobrepõe a sua aplicação
+* [**Incorporado**](/docs/modos-de-exibicao#incorporado): a tela da Memed pode ser incluída em um espaço definido dentro da sua aplicação
+
+### Tela inteira
+
+**Este é o modo de exibição que recomendamos**
+
+A exibição de tela inteira, como o próprio nome já diz, apresentará a prescrição ocupando toda a tela
+do seu sistema. O modo de exibição de **tela inteira** já é o padrão Memed. Portanto não precisa
+fazer nada adicional além dos passos de [carregamento do script da prescrição memed](/docs/modos-de-carregamento).
+
+### Incorporado
+
+O modo incorporado carregará a tela da Memed em um elemento específico dentro de sua aplicação.
+Assim você pode adequar a prescrição digital Memed a um layout já implementado dentro de seu software.
+
+Atenção
+
+É importante se atentar aos tamanhos **mínimos** que o **elemento(div)** em que a prescrição incorporada terá.
+
+```css
+/* mínimo de largura */
+min-width: 820px;
+/* mínimo de altura */
+min-height: 700px;
+```
+
+Não respeitar essas dimensões pode ocasionar em erro na hora de exibir sua prescrição digital.
+
+Para utilizar o modo incorporado no [carregamento estatico do script](/docs/modos-de-carregamento#carregamento-est%C3%A1tico)
+você precisa enviar no um atributo adicional chamado `data-container`.
+Nesse atributo você deve indicar o identificador do elemento em que a prescrição será incorporada.
+
+```html
+<script data-container="{ID_ELEMENTO_HTML}"></script>
+```
+
+Junto com os outros atributos ficaria algo como:
+
+```html
+<script
+  src="{MEMED_SCRIPT_URL}"
+  data-token="{TOKEN_ACESSO_USUARIO_PRESCRITOR}"
+  data-container="{ID_ELEMENTO_HTML}"
+></script>
+```
+
+Um exemplo com a junção do carregamento do script mais a estrutura HTML da sua página
+seria algo semelhante ao exemplo mostrado abaixo.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Titulo do seu Software</title>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <!-- Elemento com identificador "prescricao-memed" -->
+    <div id="prescricao-memed"></div>
+
+    <!--Carrega o script Memed-->
+    <script
+      src="{MEMED_SCRIPT_URL}"
+      data-token="{TOKEN_ACESSO_USUARIO_PRESCRITOR}"
+      data-container="prescricao-memed"
+    ></script>
+  </body>
+</html>
+```
+
+Nota
+
+O identificador **"prescricao-memed"** é apenas exemplo, você pode usar o nome que quiser
+para o identificador da sua DIV. Apenas fique atento para que o nome do
+identificador seja o mesmo nome que estará no atributo `data-container` do carregamento do script da prescrição.
+
+Segue um exemplo completo do modo incorporado no carregamento estático do script:
+
+Agora para utilizar o modo incorporado, no caso de [carregamento dinâmico do script](/docs/modos-de-carregamento#carregamento-din%C3%A2mico) de prescrição Memed, você deve também enviar o
+atributo adicional na criação do elemento
+
+```js
+script.data.container = "{ID_ELEMENTO_HTML}";
+```
+
+Veja um exemplo abaixo de como ficaria código javascript do modo carregamento estático com a tela incorporada:
+
+```js
+var script = document.createElement("script");
+script.src = "{MEMED_SCRIPT_URL}";
+script.dataset.token = "{TOKEN_ACESSO_USUARIO_PRESCRITOR}";
+
+//Adiciona o atributo data-container ao script que será carregado dinamicamente.
+script.data.container = "{ID_ELEMENTO_HTML}";
+
+document.body.appendChild(script);
+```
