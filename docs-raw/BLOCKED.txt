@@ -1,0 +1,61 @@
+Date: 2026-10-18T01:32:57Z
+
+$ curl -sS -o /dev/null -w '%{http_code}' https://doc.memed.com.br/docs/intro/
+curl: (56) CONNECT tunnel failed, response 403
+000
+
+$ curl -sS -o /dev/null -w '%{http_code}' https://legacy-doc.memed.com.br/
+curl: (56) CONNECT tunnel failed, response 403
+000
+
+Proxy status:
+{
+  "enabled": true,
+  "port": 38543,
+  "caBundlePath": "/root/.ccr/ca-bundle.crt",
+  "hasSystemCa": true,
+  "bundleCoversEveryHost": true,
+  "noProxy": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,api.anthropic.com,api-staging.anthropic.com,api-pr-preview.anthropic.com,mcp-proxy.anthropic.com,mcp-proxy-staging.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
+  "selective": false,
+  "standalone": false,
+  "toolScoped": false,
+  "installedProxyPreconfiguredClis": [
+    "bq",
+    "gcloud",
+    "gh",
+    "gsutil"
+  ],
+  "javaTrustStorePath": "/etc/ssl/certs/java/cacerts",
+  "javaTrustStoreType": "JKS",
+  "readmePath": "/root/.ccr/README.md",
+  "gitConfigInjection": true,
+  "gitSshRewrite": true,
+  "recentRelayFailures": [
+    {
+      "ts": "2026-10-18T01:32:51.774Z",
+      "kind": "connect_rejected",
+      "detail": "gateway answered 403 to CONNECT (policy denial or upstream failure)",
+      "host": "doc.memed.com.br:443"
+    },
+    {
+      "ts": "2026-10-18T01:32:52.051Z",
+      "kind": "connect_rejected",
+      "detail": "gateway answered 403 to CONNECT (policy denial or upstream failure)",
+      "host": "legacy-doc.memed.com.br:443"
+    },
+    {
+      "ts": "2026-10-18T01:32:57.674Z",
+      "kind": "connect_rejected",
+      "detail": "gateway answered 403 to CONNECT (policy denial or upstream failure)",
+      "host": "doc.memed.com.br:443"
+    },
+    {
+      "ts": "2026-10-18T01:32:57.947Z",
+      "kind": "connect_rejected",
+      "detail": "gateway answered 403 to CONNECT (policy denial or upstream failure)",
+      "host": "legacy-doc.memed.com.br:443"
+    }
+  ],
+  "downloadQueuedBytes": 0,
+  "downloadQueuedPeakBytes": 0,
+  "downloadReceivePauseSupported": true,
